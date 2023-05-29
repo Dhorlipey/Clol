@@ -1,9 +1,9 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
-
+import { NextApiRequest, NextApiResponse } from 'next'
 dotenv.config();
 
-const stripe = new Stripe(process.env.NEXT_SECRET_STRIPE_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15', // Specify the desired Stripe API version
 });
 
@@ -11,25 +11,20 @@ export default async function handler(req: any, res: any) {
   if (req.method === 'POST') {
     try {
       // Create Checkout Sessions from body params.
-      const params = {
+      const session = await stripe.checkout.sessions.create({
         submit_type: 'pay',
         mode: 'payment',
         payment_method_types: ['card'],
-        billing_address_collection: 'auto',
-        shipping_options: [
-          { shipping_rate: 'shr_1MJIEoHbmXqvpyhdyi5WNQHl' },
-          { shipping_rate: 'shr_1MJIGgHbmXqvpyhdQCdPgK8F' }
-        ],
-        line_items: req.body.map((item) => {
-          const img = item.image[0].asset._ref;
-          const newImage = img.replace('image-', 'https://cdn.sanity.io/images/dow10h3v/production/').replace('-png', '.png');
+
+        line_items: req.body.map((item: Product) => {
+          const img = item.image
 
           return {
             price_data: {
               currency: 'usd',
               product_data: {
                 name: item.title,
-                images: [newImage],
+                images: img,
               },
               unit_amount: item.price * 100,
             },
@@ -37,16 +32,15 @@ export default async function handler(req: any, res: any) {
               enabled: true,
               minimum: 1,
             },
-            quantity: item.quantity
+            quantity: item.amount
           }
         }),
         success_url: `${req.headers.origin}/successPay`,
         cancel_url: `${req.headers.origin}/canceled`,
-      }
-      const session = await stripe.checkout.sessions.create(params);
+      })
 
       res.status(200).json(session);
-    } catch (err) {
+    } catch (err: any) {
       res.status(err.statusCode || 500).json(err.message);
     }
   } else {

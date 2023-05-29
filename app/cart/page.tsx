@@ -3,6 +3,8 @@ import React from "react"
 import { HiOutlineTrash } from 'react-icons/hi'
 import { useCartContext } from "@/context/cartcontext"
 import { AiOutlineMinus, AiOutlinePlus, AiOutlineShopping } from 'react-icons/ai';
+import getStripe from "@/utils/getStripe";
+import { toast } from "react-hot-toast";
 
 type Props = {
   product: Product
@@ -11,6 +13,28 @@ export default function CartPage() {
 
   const { cartItems, removeFromCart, totalPrice, totalQty, toggleCartItemQuantity } = useCartContext();
 
+  const handleCheckout = async () => {
+    const stripe = await getStripe();
+
+    const res = await fetch('api/stripe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cartItems),
+    });
+    console.log(res)
+
+    if (res.status === 500) return;
+
+    const data = await res.json();
+
+    toast.loading('Redirecting...');
+
+    if (stripe) {
+      stripe.redirectToCheckout({ sessionId: data.id });
+    }
+  }
 
   return (
     <div className=" max-w-5xl mx-auto px-8 xl:px-10 mt-48 mb-8 ">
@@ -69,7 +93,7 @@ export default function CartPage() {
               </div>
 
               <div>
-                <button className='flex py-[10px] font-bold leading-[18px] bg-[#212121] items-center text-white justify-center gap-2 w-full' type='button'>Process to Checkout</button>
+                <button className='flex py-[10px] font-bold leading-[18px] bg-[#212121] items-center text-white justify-center gap-2 w-full' type='button' onClick={handleCheckout}>Process to Checkout</button>
               </div>
             </div>
           )
