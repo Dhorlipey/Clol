@@ -10,7 +10,7 @@ function Header() {
     <header className="flex items-center px-4 md:px-12 py-2 justify-between fixed top-0 w-full bg-white z-50 shadow">
       <Link href="/">
         <Image
-          src="https://i.ibb.co/McdzmYG/logo-removebg-preview-new.png"
+          src="/logo.png"
           width={70}
           height={70}
           alt="Logo"
