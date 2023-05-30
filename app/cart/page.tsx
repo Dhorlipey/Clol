@@ -23,7 +23,7 @@ export default function CartPage() {
       },
       body: JSON.stringify(cartItems),
     });
-    console.log(res.status)
+
 
     if (res.status === 500) return;
 
