@@ -14,8 +14,6 @@ export default function CartPage() {
   const { cartItems, removeFromCart, totalPrice, totalQty, toggleCartItemQuantity } = useCartContext();
 
   const handleCheckout = async () => {
-    const stripe = await getStripe();
-
     const res = await fetch('/api/stripe', {
       method: 'POST',
       headers: {
@@ -25,21 +23,22 @@ export default function CartPage() {
     });
 
 
-    if (res.status === 500) return;
+    if (!res.ok) {
+      return;
 
-    const data = await res.json();
-
-    toast.loading('Redirecting...');
-
-    if (stripe) {
-      stripe.redirectToCheckout({ sessionId: data.id });
     }
+    console.log(res)
+    // const stripe = await getStripe();
+    // const { error } = await stripe!.redirectToCheckout({
+    //   sessionId: res.url,
+    // })
+    // console.log(error)
   }
 
   return (
     <div className=" max-w-5xl mx-auto px-8 xl:px-10 mt-48 mb-8 ">
       <h2 className="font-bold text-[1.5rem]">Shopping Cart</h2>
-      <div className=" flex lg:flex-row justify-between gap-16">
+      <div className=" flex flex-col md:flex-row justify-between gap-16">
         <div className="mt-8 gap-16 flex flex-col">
           {cartItems.length > 0 && (
             cartItems.map((item, index) => (

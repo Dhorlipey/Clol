@@ -1,6 +1,5 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
-import { NextApiRequest, NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
 dotenv.config();
 
@@ -10,10 +9,12 @@ export async function POST(req: any) {
 
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2022-11-15', // Specify the desired Stripe API version
+      apiVersion: '2022-11-15',
     });
+    let data = JSON.parse(req.body);
 
     // Create Checkout Sessions from body params.
+
     const session = await stripe.checkout.sessions.create({
       submit_type: 'pay',
       mode: 'payment',
@@ -42,10 +43,10 @@ export async function POST(req: any) {
       cancel_url: `${req.headers.origin}/canceled`,
     })
 
-    NextResponse.json(session.url);
+    return NextResponse.json(session);
 
   } catch (err: any) {
-    NextResponse.json(err.message);
+    return NextResponse.json(err.message);
   }
 
 }
