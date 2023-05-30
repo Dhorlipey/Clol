@@ -1,11 +1,12 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 dotenv.config();
 
 
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: any) {
 
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -41,10 +42,10 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
       cancel_url: `${req.headers.origin}/canceled`,
     })
 
-    res.json(session.url);
+    NextResponse.json(session.url);
 
   } catch (err: any) {
-    res.status(err.statusCode || 500).json(err.message);
+    NextResponse.json(err.message);
   }
 
 }
