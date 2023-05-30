@@ -18,6 +18,7 @@ export default function ProductPage({ params: { id } }: Props) {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, []);
 
   const fetchData = useCallback(async () => {

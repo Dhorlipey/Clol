@@ -1,7 +1,7 @@
 import React from 'react'
 import { CgShoppingCart } from 'react-icons/cg'
 
-export default function () {
+export default function Hero() {
   return (
     <div className='flex justify-between gap-16 mb-16 relative'>
       <div className='flex'>
