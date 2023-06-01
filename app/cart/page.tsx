@@ -14,13 +14,13 @@ export default function CartPage() {
   const { cartItems, removeFromCart, totalPrice, totalQty, toggleCartItemQuantity } = useCartContext();
 
   const handleCheckout = async () => {
-    const res = await fetch('/api/stripe', {
+    const config = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(cartItems),
-    });
+    }
+    const res = await fetch('/api/stripe', config);
 
 
     if (!res.ok) {
@@ -28,11 +28,7 @@ export default function CartPage() {
 
     }
     console.log(res)
-    // const stripe = await getStripe();
-    // const { error } = await stripe!.redirectToCheckout({
-    //   sessionId: res.url,
-    // })
-    // console.log(error)
+
   }
 
   return (
@@ -42,15 +38,15 @@ export default function CartPage() {
         <div className="mt-8 gap-16 flex flex-col">
           {cartItems.length > 0 && (
             cartItems.map((item, index) => (
-              <div className="flex gap-8" key={index}>
+              <div className="flex flex-col md:flex-row gap-8" key={index}>
 
-                <div className="h-[140px] rounded-lg">
+                <div className="h-[140px] flex justify-center rounded-lg">
 
-                  <img src={item.image} alt={item.title} className="w-full h-full " />
+                  <img src={item.image} alt={item.title} className="md:w-full h-full " />
                 </div>
-                <div className="flex flex-col justify-between w-3/4 gap-6">
+                <div className="flex flex-col justify-between md:w-3/4 gap-6">
                   <div className="flex justify-between items-start gap-16">
-                    <h3 className="font-light text-xl">{item.title}</h3>
+                    <h3 className="font-light text-[18px] md:text-xl">{item.title}</h3>
                     <button type='button' onClick={() => removeFromCart(item)} className='bg-transparent border-none'>
                       <HiOutlineTrash size={28} />
                     </button>
